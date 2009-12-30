@@ -27,7 +27,7 @@ class Cinatra
     if /^\s*(\w+)\s+(.*?)\s*$/ =~ line
       command = commands[$1.to_sym]
       unless command
-        puts "Command not found!" 
+        puts "Command `#{command}` not found!"
       else
         begin
           command.call($2)
