@@ -5,7 +5,7 @@ class Cinatra
   include Singleton
 
   def add_command(name, &block)
-    raise ArgumentError, "invalid command name: #{name}." unless name.to_s =~ /^\w+$/
+    raise ArgumentError, "invalid command name: #{name}." unless /^\w+$/ =~ name.to_s
     raise "command '#{name}' is already exists." if commands.key?(name.to_sym)
 
     commands[name.to_sym] = block
@@ -24,16 +24,14 @@ class Cinatra
   end
 
   def call(line)
-    if /^\s*(\w+)\s+(.*?)\s*$/ =~ line
-      command = commands[$1.to_sym]
-      unless command
-        puts "Command `#{command}` not found!"
-      else
-        begin
-          command.call($2)
-        rescue Exception => e
-          puts e.message
-        end
+    return unless /^\s*(\w+)\s+(.*?)\s*$/ =~ line
+    unless command = commands[$1.to_sym]
+      puts "Command `#{command}` not found!"
+    else
+      begin
+        command.call($2)
+      rescue Exception => e
+        puts e.message
       end
     end
   end
@@ -50,7 +48,7 @@ class Cinatra
 
     Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
     Readline.completion_proc = lambda do |text|
-      Cinatra.commands.keys.map{|i| i.to_s}.grep(/#{Regexp.quote(text)}/)
+      Cinatra.commands.keys.map {|i| i.to_s }.grep(/#{Regexp.quote(text)}/)
     end
 
     while buf = Readline.readline('> ', true)
