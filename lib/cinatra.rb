@@ -1,7 +1,7 @@
 require 'singleton'
 require 'readline'
 
-class Commander
+class Cinatra
   include Singleton
 
   def add_command(name, &block)
@@ -50,7 +50,7 @@ class Commander
 
     Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
     Readline.completion_proc = lambda do |text|
-      Commander.commands.keys.map{|i| i.to_s}.grep(/#{Regexp.quote(text)}/)
+      Cinatra.commands.keys.map{|i| i.to_s}.grep(/#{Regexp.quote(text)}/)
     end
 
     while buf = Readline.readline('> ', true)
@@ -71,10 +71,10 @@ end
 
 module Kernel
   def command(name, &block)
-    Commander.add_command(name, &block)
+    Cinatra.add_command(name, &block)
   end
 end
 
 at_exit do
-  Commander.start
+  Cinatra.start
 end

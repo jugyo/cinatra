@@ -4,11 +4,11 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "commander"
+    gem.name = "cinatra"
     gem.summary = %Q{A command base app library.}
-    gem.description = %Q{Commander is a Sinatra like command base app library.}
+    gem.description = %Q{Cinatra is a Sinatra like command base app library.}
     gem.email = "jugyo.org@gmail.com"
-    gem.homepage = "http://github.com/jugyo/commander"
+    gem.homepage = "http://github.com/jugyo/cinatra"
     gem.authors = ["jugyo"]
     gem.add_development_dependency "shoulda", ">= 0"
     gem.add_development_dependency "rr", ">= 0"
@@ -46,7 +46,7 @@ Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "commander #{version}"
+  rdoc.title = "cinatra #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

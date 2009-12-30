@@ -1,18 +1,22 @@
-= Commander
+= Cinatra
 
-Commander is a Sinatra like command base app library.
+Cinatra is a Sinatra like command base app library.
 
 == Usage
 
-  require 'commander'
+  require 'cinatra'
 
   command 'sleep' do |arg|
     sleep arg.to_f
   end
 
+== Run
+
+  ruby app.rb
+
 == Installation
 
-  gem install commander
+  gem install cinatra
 
 == Copyright
 
