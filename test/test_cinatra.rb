@@ -42,7 +42,10 @@ class TestCinatra < Test::Unit::TestCase
 
       should "not call the command" do
         mock(@block).call('foo bar').times(0)
+
+        $stdout = StringIO.new
         Cinatra.call(' test_ foo bar ')
+        $stdout = STDOUT
       end
     end
 
