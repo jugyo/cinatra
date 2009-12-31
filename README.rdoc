@@ -10,6 +10,10 @@ Cinatra is a Sinatra like command base app library.
     sleep arg.to_f
   end
 
+  command 'exit' do
+    Cinatra.exit
+  end
+
 == Run
 
   ruby app.rb
