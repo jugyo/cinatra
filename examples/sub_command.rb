@@ -25,7 +25,3 @@ end
 command 'todo clear' do |arg|
   TODOS.clear
 end
-
-command 'exit' do
-  Cinatra.exit
-end

@@ -8,7 +8,10 @@ class Cinatra
 
   def add_command(name, &block)
     name = self.class.normalize_as_command_name(name.to_s).to_sym
-    raise "command '#{name}' is already exists." if commands.key?(name)
+    if commands.key?(name)
+      puts "Warning: command '#{name}' is already exists."
+      return
+    end
     commands[name] = block
   end
 
@@ -33,7 +36,7 @@ class Cinatra
     return if line.empty?
     command_name, command_arg = resolve_command_name_and_arg(line)
     unless command_name
-      puts "Command not found!"
+      puts "Error: Command not found!"
     else
       begin
         get_command(command_name).call(command_arg)
@@ -105,6 +108,10 @@ module Kernel
   def command(name, &block)
     Cinatra.add_command(name, &block)
   end
+end
+
+command 'exit' do
+  Cinatra.exit
 end
 
 at_exit do
