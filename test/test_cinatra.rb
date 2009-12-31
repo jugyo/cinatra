@@ -47,10 +47,69 @@ class TestCinatra < Test::Unit::TestCase
         Cinatra.call(' test_ foo bar ')
         $stdout = STDOUT
       end
+
+      should 'resolve command name' do
+        assert_equal [:test, nil],         Cinatra.resolve_command_name_and_arg('test')
+        assert_equal [:test, 'foo'],       Cinatra.resolve_command_name_and_arg('test foo')
+        assert_equal [:test, 'foo bar'],   Cinatra.resolve_command_name_and_arg('test foo bar')
+        assert_equal [:test, 'foo  bar'],  Cinatra.resolve_command_name_and_arg('test foo  bar')
+      end
+
+      context "add a command 'test foo'" do
+        setup do
+          @block_foo = lambda {}
+          Cinatra.add_command('test foo', &@block_foo)
+        end
+
+        should "call command 'test'" do
+          mock(@block).call('bar')
+          Cinatra.call('test bar')
+        end
+
+        should "call command 'test foo'" do
+          mock(@block).call.with_any_args.times(0)
+          mock(@block_foo).call(nil)
+          Cinatra.call('test foo')
+          mock(@block_foo).call('a b')
+          Cinatra.call('test foo a b')
+        end
+
+        context "add a command 'test foo bar'" do
+          setup do
+            @block_foo_bar = lambda {}
+            Cinatra.add_command('test foo bar', &@block_foo_bar)
+          end
+
+          should "call command 'test foo bar'" do
+            mock(@block).call.with_any_args.times(0)
+            mock(@block_foo).call.with_any_args.times(0)
+            mock(@block_foo_bar).call(nil)
+            Cinatra.call('test foo bar')
+            mock(@block_foo_bar).call('a b')
+            Cinatra.call('test foo bar a b')
+          end
+        end
+      end
     end
 
-    should "raise Error when spcify invalid name for command " do
-      assert_raise(ArgumentError) { Cinatra.add_command(' test') {} }
+    should "check to match command to line" do
+      assert Cinatra.is_command_match_to_line?(['test'], 'test') == true
+      assert Cinatra.is_command_match_to_line?(['test'], ' test ') == true
+      assert Cinatra.is_command_match_to_line?(['test'], 'te st') == false
+      assert Cinatra.is_command_match_to_line?(['test'], 'tes') == false
+      assert Cinatra.is_command_match_to_line?(['test', 'foo'], 'test foo') == true
+      assert Cinatra.is_command_match_to_line?(['test', 'foo'], ' test  foo ') == true
+      assert Cinatra.is_command_match_to_line?(['test', 'bar'], ' test  foo ') == false
+      assert Cinatra.is_command_match_to_line?(['test', 'foo'], 'foo test') == false
+      assert Cinatra.is_command_match_to_line?(['test', 'foo', 'bar'], 'test foo bar') == true
+    end
+
+    should "normalize as command name" do
+      assert_equal 'test', Cinatra.normalize_as_command_name('test')
+      assert_equal 'test', Cinatra.normalize_as_command_name(' test ')
+      assert_equal 'test foo', Cinatra.normalize_as_command_name('test foo')
+      assert_equal 'test foo', Cinatra.normalize_as_command_name(' test  foo ')
+      assert_equal '', Cinatra.normalize_as_command_name('')
     end
 
     should "raise Error when add commans with same name" do

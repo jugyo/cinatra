@@ -5,10 +5,9 @@ class Cinatra
   include Singleton
 
   def add_command(name, &block)
-    raise ArgumentError, "invalid command name: #{name}." unless /^\w+$/ =~ name.to_s
-    raise "command '#{name}' is already exists." if commands.key?(name.to_sym)
-
-    commands[name.to_sym] = block
+    name = self.class.normalize_as_command_name(name.to_s).to_sym
+    raise "command '#{name}' is already exists." if commands.key?(name)
+    commands[name] = block
   end
 
   def delete_command(name)
@@ -23,13 +22,19 @@ class Cinatra
     @commands ||= {}
   end
 
+  def command_names
+    commands.keys.map {|i| i.to_s }
+  end
+
   def call(line)
-    return unless /^\s*(\w+)\s+(.*?)\s*$/ =~ line
-    unless command = commands[$1.to_sym]
-      puts "Command `#{command}` not found!"
+    line = line.strip
+    return if line.empty?
+    command_name, command_arg = resolve_command_name_and_arg(line)
+    unless command_name
+      puts "Command not found!"
     else
       begin
-        command.call($2)
+        get_command(command_name).call(command_arg)
       rescue Exception => e
         puts e.message
       end
@@ -56,13 +61,36 @@ class Cinatra
     end
   end
 
+  def resolve_command_name_and_arg(line)
+    command_names.map {|i| i.split(' ')}.sort_by{|i| i.size}.reverse_each do |command|
+      if self.class.is_command_match_to_line?(command, line)
+        name = command.join(' ').to_sym
+        arg = line.split(' ', command.size + 1)[command.size]
+        return name, arg
+      end
+    end
+    return nil, nil
+  end
+
   class << self
-    [:add_command, :get_command, :delete_command, :commands, :start, :call].each do |method|
+    [
+      :add_command, :get_command, :delete_command,
+      :commands, :start, :call, :command_names,
+      :resolve_command_name_and_arg
+    ].each do |method|
       class_eval <<-DELIM
         def #{method}(*args, &block)
           instance.#{method}(*args, &block)
         end
       DELIM
+    end
+
+    def normalize_as_command_name(name)
+      name.strip.gsub(/\s+/, ' ')
+    end
+
+    def is_command_match_to_line?(command, line)
+      line.split(' ')[0...command.size] == command
     end
   end
 end
