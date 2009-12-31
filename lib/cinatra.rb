@@ -4,6 +4,8 @@ require 'readline'
 class Cinatra
   include Singleton
 
+  attr_accessor :exiting
+
   def add_command(name, &block)
     name = self.class.normalize_as_command_name(name.to_s).to_sym
     raise "command '#{name}' is already exists." if commands.key?(name)
@@ -56,9 +58,13 @@ class Cinatra
       Cinatra.commands.keys.map {|i| i.to_s }.grep(/#{Regexp.quote(text)}/)
     end
 
-    while buf = Readline.readline('> ', true)
+    while !exiting && buf = Readline.readline('> ', true)
       call(buf)
     end
+  end
+
+  def exit
+    self.exiting = true
   end
 
   def resolve_command_name_and_arg(line)
@@ -76,7 +82,7 @@ class Cinatra
     [
       :add_command, :get_command, :delete_command,
       :commands, :start, :call, :command_names,
-      :resolve_command_name_and_arg
+      :resolve_command_name_and_arg, :exit
     ].each do |method|
       class_eval <<-DELIM
         def #{method}(*args, &block)
