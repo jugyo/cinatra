@@ -5,8 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "cinatra"
-    gem.summary = %Q{A command base app library.}
-    gem.description = %Q{Cinatra is a Sinatra like command base app library.}
+    gem.summary = %Q{Cinatra is a library for command based console application.}
+    gem.description = %Q{Cinatra is a library for command based console application. It is like Sinatra. :)}
     gem.email = "jugyo.org@gmail.com"
     gem.homepage = "http://github.com/jugyo/cinatra"
     gem.authors = ["jugyo"]
