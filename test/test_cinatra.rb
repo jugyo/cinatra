@@ -68,6 +68,14 @@ class TestCinatra < Test::Unit::TestCase
           Cinatra.add_command('test foo', &@block_foo)
         end
 
+        should "do completion" do
+          assert_equal ['test', 'test foo'], @instance.completion('')
+          assert_equal ['test', 'test foo'], @instance.completion('test')
+          assert_equal ['test foo'], @instance.completion('test ')
+          assert_equal [], @instance.completion('test b')
+          assert_equal [], @instance.completion('foo')
+        end
+
         should "call command 'test'" do
           mock(@block).call('bar')
           Cinatra.call('test bar')

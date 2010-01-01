@@ -46,6 +46,10 @@ class Cinatra
     end
   end
 
+  def completion(text)
+    commands.keys.map {|i| i.to_s }.grep(/^#{Regexp.quote(text)}/)
+  end
+
   def start
     stty_save = `stty -g`.chomp
     trap("INT") do
@@ -57,9 +61,7 @@ class Cinatra
     end
 
     Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
-    Readline.completion_proc = lambda do |text|
-      Cinatra.commands.keys.map {|i| i.to_s }.grep(/#{Regexp.quote(text)}/)
-    end
+    Readline.completion_proc = lambda {|text| completion(text) }
 
     while !exiting && buf = Readline.readline('> ', true)
       call(buf)
