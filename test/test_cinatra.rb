@@ -30,11 +30,11 @@ class TestCinatra < Test::Unit::TestCase
       should "override a command" do
         block = lambda {}
         Cinatra.add_command('test', &block)
-        assert_equal block, Cinatra.get_command('test')
+        assert_equal block, Cinatra.get_command('test').proc
       end
 
       should "get a command" do
-        assert_equal @block, Cinatra.get_command('test')
+        assert_equal @block, Cinatra.get_command('test').proc
       end
 
       should "delete a command" do

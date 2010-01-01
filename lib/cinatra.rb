@@ -1,17 +1,18 @@
 require 'singleton'
 require 'readline'
+require 'cinatra/command'
 
 class Cinatra
   include Singleton
 
   attr_accessor :exiting
 
-  def add_command(name, &block)
+  def add_command(name, desc = '', &block)
     name = normalize_as_command_name(name)
     if commands.key?(name)
       puts "Warning: The command '#{name}' will be overridden."
     end
-    commands[name] = block
+    commands[name] = Command.new(name, desc, &block)
   end
 
   def delete_command(name)
