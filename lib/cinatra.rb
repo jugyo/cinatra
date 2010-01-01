@@ -36,12 +36,12 @@ class Cinatra
     return if line.empty?
     command_name, command_arg = resolve_command_name_and_arg(line)
     unless command_name
-      puts "Error: Command not found!"
+      puts "Error: Command not found: #{line}"
     else
       begin
         get_command(command_name).call(command_arg)
       rescue Exception => e
-        puts e.message
+        puts "Error: #{e.message}\n  #{e.backtrace.join("\n  ")}"
       end
     end
   end
