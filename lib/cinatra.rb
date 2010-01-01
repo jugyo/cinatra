@@ -13,6 +13,8 @@ class Cinatra
       puts "Warning: The command '#{name}' will be overridden."
     end
     commands[name] = Command.new(name, desc, &block)
+  rescue Exception => e
+    handle_error(e)
   end
 
   def delete_command(name)
@@ -38,12 +40,10 @@ class Cinatra
     unless command_name
       puts "Error: Command not found: #{line}"
     else
-      begin
-        get_command(command_name).call(command_arg)
-      rescue Exception => e
-        puts "Error: #{e.message}\n  #{e.backtrace.join("\n  ")}"
-      end
+      get_command(command_name).call(command_arg)
     end
+  rescue Exception => e
+    handle_error(e)
   end
 
   def completion(text)
@@ -51,15 +51,6 @@ class Cinatra
   end
 
   def start
-    stty_save = `stty -g`.chomp
-    trap("INT") do
-      begin
-        system "stty", stty_save
-      ensure
-        exit
-      end
-    end
-
     Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
     Readline.completion_proc = lambda {|text| completion(text) }
 
@@ -70,6 +61,10 @@ class Cinatra
 
   def exit
     self.exiting = true
+  end
+
+  def handle_error(e)
+    puts "Error: #{e.message}\n  #{e.backtrace.join("\n  ")}"
   end
 
   def resolve_command_name_and_arg(line)
