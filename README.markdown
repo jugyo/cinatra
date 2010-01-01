@@ -32,7 +32,22 @@ sub command:
 Run
 -----
 
-  ruby app.rb
+    % ruby app.rb
+
+Default Commands
+-----
+
+help:
+
+    > help
+    help   Show help
+    exit   Exit
+    ...
+
+exit:
+
+    > exit
+    %
 
 Installation
 -----
