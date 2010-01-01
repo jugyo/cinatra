@@ -27,6 +27,12 @@ class TestCinatra < Test::Unit::TestCase
         Cinatra.add_command('test', &@block)
       end
 
+      should "override a command" do
+        block = lambda {}
+        Cinatra.add_command('test', &block)
+        assert_equal block, Cinatra.get_command('test')
+      end
+
       should "get a command" do
         assert_equal @block, Cinatra.get_command('test')
       end

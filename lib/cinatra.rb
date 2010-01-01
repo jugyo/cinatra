@@ -9,7 +9,7 @@ class Cinatra
   def add_command(name, &block)
     name = normalize_as_command_name(name)
     if commands.key?(name)
-      raise "Warning: command '#{name}' is already exists."
+      puts "Warning: The command '#{name}' will be overridden."
     end
     commands[name] = block
   end
