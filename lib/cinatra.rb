@@ -106,13 +106,28 @@ class Cinatra
 end
 
 module Kernel
-  def command(name, &block)
-    Cinatra.add_command(name, &block)
+  def command(name, desc = '', &block)
+    Cinatra.add_command(name, desc, &block)
   end
 end
 
-command 'exit' do
+command 'exit', 'Exit' do
   Cinatra.exit
+end
+
+command 'help', 'Show help'do |arg|
+  if arg
+    command = Cinatra.get_command(arg)
+    if command
+      puts command.desc
+    end
+  else
+    commands = Cinatra.commands.values
+    max_length = commands.inject(0) {|max, command| [command.name.to_s.size, max].max }
+    commands.each do |command|
+      puts "#{command.name.to_s.ljust(max_length)}  #{command.desc.split("\n")[0]}"
+    end
+  end
 end
 
 at_exit do
