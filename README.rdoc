@@ -6,12 +6,14 @@ Cinatra is a Sinatra like command base app library.
 
   require 'cinatra'
 
-  command 'sleep' do |arg|
-    sleep arg.to_f
+  command 'todos' do |arg|
+    show_todos
   end
 
-  command 'exit' do
-    Cinatra.exit
+sub command:
+
+  command 'todo add' do |arg|
+    TODOS << arg
   end
 
 == Run
