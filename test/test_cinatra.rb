@@ -8,6 +8,7 @@ class TestCinatra < Test::Unit::TestCase
   context 'default' do
     setup do
       Cinatra.commands.clear
+      @instance = Cinatra.instance
     end
 
     should 'add command' do
@@ -49,10 +50,10 @@ class TestCinatra < Test::Unit::TestCase
       end
 
       should 'resolve command name' do
-        assert_equal [:test, nil],         Cinatra.resolve_command_name_and_arg('test')
-        assert_equal [:test, 'foo'],       Cinatra.resolve_command_name_and_arg('test foo')
-        assert_equal [:test, 'foo bar'],   Cinatra.resolve_command_name_and_arg('test foo bar')
-        assert_equal [:test, 'foo  bar'],  Cinatra.resolve_command_name_and_arg('test foo  bar')
+        assert_equal [:test, nil],         @instance.resolve_command_name_and_arg('test')
+        assert_equal [:test, 'foo'],       @instance.resolve_command_name_and_arg('test foo')
+        assert_equal [:test, 'foo bar'],   @instance.resolve_command_name_and_arg('test foo bar')
+        assert_equal [:test, 'foo  bar'],  @instance.resolve_command_name_and_arg('test foo  bar')
       end
 
       context "add a command 'test foo'" do
@@ -93,28 +94,24 @@ class TestCinatra < Test::Unit::TestCase
     end
 
     should "check to match command to line" do
-      assert Cinatra.is_command_match_to_line?(['test'], 'test') == true
-      assert Cinatra.is_command_match_to_line?(['test'], ' test ') == true
-      assert Cinatra.is_command_match_to_line?(['test'], 'te st') == false
-      assert Cinatra.is_command_match_to_line?(['test'], 'tes') == false
-      assert Cinatra.is_command_match_to_line?(['test', 'foo'], 'test foo') == true
-      assert Cinatra.is_command_match_to_line?(['test', 'foo'], ' test  foo ') == true
-      assert Cinatra.is_command_match_to_line?(['test', 'bar'], ' test  foo ') == false
-      assert Cinatra.is_command_match_to_line?(['test', 'foo'], 'foo test') == false
-      assert Cinatra.is_command_match_to_line?(['test', 'foo', 'bar'], 'test foo bar') == true
+      assert @instance.is_command_match_to_line?(['test'], 'test') == true
+      assert @instance.is_command_match_to_line?(['test'], ' test ') == true
+      assert @instance.is_command_match_to_line?(['test'], 'te st') == false
+      assert @instance.is_command_match_to_line?(['test'], 'tes') == false
+      assert @instance.is_command_match_to_line?(['test', 'foo'], 'test foo') == true
+      assert @instance.is_command_match_to_line?(['test', 'foo'], ' test  foo ') == true
+      assert @instance.is_command_match_to_line?(['test', 'bar'], ' test  foo ') == false
+      assert @instance.is_command_match_to_line?(['test', 'foo'], 'foo test') == false
+      assert @instance.is_command_match_to_line?(['test', 'foo', 'bar'], 'test foo bar') == true
     end
 
     should "normalize as command name" do
-      assert_equal 'test', Cinatra.normalize_as_command_name('test')
-      assert_equal 'test', Cinatra.normalize_as_command_name(' test ')
-      assert_equal 'test foo', Cinatra.normalize_as_command_name('test foo')
-      assert_equal 'test foo', Cinatra.normalize_as_command_name(' test  foo ')
-      assert_equal '', Cinatra.normalize_as_command_name('')
-    end
-
-    should "raise Error when add commans with same name" do
-      assert_nothing_raised(RuntimeError) { Cinatra.add_command('test') {} }
-      assert_raise(RuntimeError) { Cinatra.add_command('test') {} }
+      assert_equal :'test',      @instance.normalize_as_command_name('test')
+      assert_equal :'test',      @instance.normalize_as_command_name(:test)
+      assert_equal :'test',      @instance.normalize_as_command_name(' test ')
+      assert_equal :'test foo',  @instance.normalize_as_command_name('test foo')
+      assert_equal :'test foo',  @instance.normalize_as_command_name(' test  foo ')
+      assert_raise(ArgumentError) { @instance.normalize_as_command_name('') }
     end
   end
 end

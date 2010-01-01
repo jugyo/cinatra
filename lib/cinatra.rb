@@ -7,16 +7,15 @@ class Cinatra
   attr_accessor :exiting
 
   def add_command(name, &block)
-    name = self.class.normalize_as_command_name(name.to_s).to_sym
+    name = normalize_as_command_name(name)
     if commands.key?(name)
-      puts "Warning: command '#{name}' is already exists."
-      return
+      raise "Warning: command '#{name}' is already exists."
     end
     commands[name] = block
   end
 
   def delete_command(name)
-    commands.delete(name.to_sym)
+    commands.delete(normalize_as_command_name(name))
   end
 
   def get_command(name)
@@ -72,7 +71,7 @@ class Cinatra
 
   def resolve_command_name_and_arg(line)
     command_names.map {|i| i.split(' ')}.sort_by{|i| i.size}.reverse_each do |command|
-      if self.class.is_command_match_to_line?(command, line)
+      if is_command_match_to_line?(command, line)
         name = command.join(' ').to_sym
         arg = line.split(' ', command.size + 1)[command.size]
         return name, arg
@@ -81,25 +80,26 @@ class Cinatra
     return nil, nil
   end
 
+  def normalize_as_command_name(name)
+    name = name.to_s
+    raise ArgumentError, "`#{name}` is invalid for command name." if /^\s*$/ =~ name
+    name.strip.gsub(/\s+/, ' ').to_sym
+  end
+
+  def is_command_match_to_line?(command, line)
+    line.split(' ')[0...command.size] == command
+  end
+
   class << self
     [
       :add_command, :get_command, :delete_command,
-      :commands, :start, :call, :command_names,
-      :resolve_command_name_and_arg, :exit
+      :commands, :start, :call, :command_names, :exit
     ].each do |method|
       class_eval <<-DELIM
         def #{method}(*args, &block)
           instance.#{method}(*args, &block)
         end
       DELIM
-    end
-
-    def normalize_as_command_name(name)
-      name.strip.gsub(/\s+/, ' ')
-    end
-
-    def is_command_match_to_line?(command, line)
-      line.split(' ')[0...command.size] == command
     end
   end
 end
