@@ -8,20 +8,23 @@ def show_todos
   end
 end
 
-command 'todo add' do |arg|
+command 'todo add', <<DESC do |arg|
+Add a todo to list
+usage: todo add buy the milk
+DESC
   TODOS << arg
   show_todos
 end
 
-command 'todo delete' do |arg|
+command 'todo delete', 'Delete a todo from list' do |arg|
   TODOS.delete_at(arg.to_i)
   show_todos
 end
 
-command 'todo list' do |arg|
+command 'todo list', 'Show todo list' do |arg|
   show_todos
 end
 
-command 'todo clear' do |arg|
+command 'todo clear', 'Clear todo list' do |arg|
   TODOS.clear
 end
