@@ -52,7 +52,7 @@ exit:
 Installation
 -----
 
-  gem install cinatra
+    % gem install cinatra
 
 Copyright
 -----
