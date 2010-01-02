@@ -7,6 +7,12 @@ class Cinatra
 
   attr_accessor :exiting
 
+  def initialize
+    Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
+    Readline.completion_proc = lambda {|text| completion(text) }
+    trap("INT") { exit }
+  end
+
   def add_command(name, desc = '', &block)
     name = normalize_as_command_name(name)
     if commands.key?(name)
@@ -51,9 +57,6 @@ class Cinatra
   end
 
   def start
-    Readline.basic_word_break_characters= "\t\n\"\\'`><=;|&{("
-    Readline.completion_proc = lambda {|text| completion(text) }
-
     while !exiting && buf = Readline.readline('> ', true)
       call(buf)
     end
