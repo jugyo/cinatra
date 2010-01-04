@@ -3,6 +3,7 @@ Cinatra
 
 Cinatra is a library for command based console application.
 It is like Sinatra.
+シーナトラ.
 
 Feature
 -----
