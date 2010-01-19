@@ -131,5 +131,5 @@ command 'help', 'Show help'do |arg|
 end
 
 at_exit do
-  Cinatra.start
+  Cinatra.start if $!.nil?
 end
