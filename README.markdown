@@ -16,18 +16,22 @@ Feature
 Usage
 -----
 
-    require 'cinatra'
-    
     command 'todos' do |arg|
       show_todos
     end
 
 sub command:
 
-    require 'cinatra'
-
     command 'todo add' do |arg|
       TODOS << arg
+    end
+
+write help:
+
+    command 'todos', <<HELP do |arg|
+    list todos
+    HELP
+      ...
     end
 
 Run
